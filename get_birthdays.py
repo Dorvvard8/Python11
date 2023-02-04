@@ -30,28 +30,3 @@ def get_birthdays_per_week(users):
                 week_days[k] = week_days[k] + key + ', '
         if to_print:
             print(week_days[k][:-2])
-
-    # users2 = {key: value.replace(year=2023) for key, value in users.items()
-    #           if value.replace(year=2023) < date_plus_week}
-    # print('\nusers3 : ', users)
-    # users.update(users2)
-    #
-    # users.update(users2)
-    # print('\nusers : ', users)
-    # return result
-# quantity — количество чисел в наборе(должен быть min < quantity < max)
-users = dict()
-Dima = datetime(year=2001, month=2, day=3)
-Vasia = datetime(year=2001, month=2, day=4)
-Kolia = datetime(year=1995, month=2, day=5)
-Slava = datetime(year=2004, month=2, day=6)
-Galina = datetime(year=2004, month=2, day=7)
-Sveta = datetime(year=2001, month=2, day=8)
-Natali = datetime(year=2005, month=2, day=9)
-Serg = datetime(year=2001, month=2, day=10)
-Misha = datetime(year=1997, month=2, day=11)
-Kostia = datetime(year=2003, month=2, day=12)
-Maria = datetime(year=1998, month=2, day=13)
-users = {'Dima': Dima, 'Vasia': Vasia, 'Kolia': Kolia, 'Slava': Slava, 'Galina': Galina, 'Sveta': Sveta,
-         'Natali': Natali, 'Serg': Serg, 'Misha': Misha, 'Kostia': Kostia, 'Maria': Maria}
-get_birthdays_per_week(users)
