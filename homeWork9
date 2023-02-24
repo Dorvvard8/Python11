@@ -1,0 +1,128 @@
+import sys
+
+
+base = {}
+output = {'error1': 'Invalid input! Try again!',
+          'phone_error': 'Must be entered in the format: phone[space]username',
+          'phone_error1': 'The name is NOT already in the database',
+          'add_error1': 'The name is already in the database',
+          'add_error2': 'The phone is already in the database',
+          'change_error1': 'The name is NOT already in the database',
+          'hello': '--How can I help you?',
+          'show_error1': 'Empty base',
+          'close': '--Good bye!'
+          }
+command = ['hello', 'add', 'change', 'phone',
+           'show all', 'good bye', 'close', 'exit']
+
+
+def main():
+    flag = True
+    while flag:
+        input_string = input()
+        input_string = input_string.lower().strip()
+        for i in command:
+            mod_string = input_string.split()[0]
+            if i + input_string[len(i):] == input_string:
+                my_return = get_handler(i)(input_string)
+                if my_return:
+                    print(my_return)
+                    if my_return == 'Good bye!':
+                        sys.exit()
+                break
+        else:
+            print(output['error1'])
+
+
+def input_error(func):
+    def inner(input_string):
+        result = func(input_string)
+        if result[1]:
+            print(f'--error: {result[0]}')
+            return False
+        else:
+            return result[0]
+    return inner
+
+
+@input_error
+def good_bye(input_string):
+    if input_string in ['close', 'exit', 'good bye']:
+        return [output['close'], False]
+    else:
+        output[output['error1'], True]
+
+
+@input_error
+def hello(input_string):
+    if input_string == 'hello':
+        return [output['hello'], False]
+    else:
+        return [output['error1'], True]
+
+
+@input_error
+def show(input_string):
+    if input_string == 'show all':
+        if len(base):
+            return [base, False]
+        else:
+            return [output['show_error1'], True]
+    else:
+        return [output['error1'], True]
+
+
+@input_error
+def phone(input_string):
+    if input_string[0:6] != 'phone ':
+        return 'phone_error'
+    phone = input_string[6:]
+    if phone not in base:
+        return [output['phone_error1'], True]
+    else:
+        return [base[phone], False]
+
+
+@input_error
+def add(input_string):
+    list_add = input_string.split()
+    if input_string[0:4] != 'add ' or len(list_add) != 3:
+        return [output['error1'], True]
+    if list_add[1] in base:
+        return [output['add_error1'], True]
+    elif list_add[2] in base.values():
+        return [output['add_error1'], True]
+    base[list_add[1]] = list_add[2]
+    return ['Added!', False]
+
+
+@input_error
+def change(input_string):
+    list_add = input_string.split()
+    if input_string[0:7] != 'change ' or len(list_add) != 3:
+        return [output['error1'], True]
+    if list_add[1] not in base:
+        return [output['change_error1'], True]
+    elif list_add[2] in base.values():
+        return [output['add_error1'], True]
+    base[list_add[1]] = list_add[2]
+    return ['Changed!', False]
+
+
+OPERATIONS = {
+    'good bye': good_bye,
+    'exit': good_bye,
+    'close': good_bye,
+    'hello': hello,
+    'show all': show,
+    'phone': phone,
+    'add': add,
+    'change': change
+}
+
+
+def get_handler(operator):
+    return OPERATIONS[operator]
+
+
+main()
