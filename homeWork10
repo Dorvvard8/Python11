@@ -1,0 +1,191 @@
+import sys
+import os
+from collections import UserDict
+
+
+os.system('cls||clear')
+
+
+class  MyException(Exception):
+    def __init__(self, error):
+        self.output = {'error1': 'Invalid input! Try again!',
+            'phone_error': 'Must be entered in the format: phone[space]username',
+            'phone_error1': 'The name is NOT already in the database',
+            'add_error1': 'The name is already in the database',
+            'add_error2': 'The phone is already in the database',
+            'change_error1': 'The name is NOT already in the database',
+            'hello': '--How can I help you?',
+            'show_error1': '--The base is empty!',
+            'close': '--Good bye!'
+            }
+        print(self.output[error])
+        if error == 'close':
+            sys.exit()
+
+
+class Parser():
+    def __init__(self):
+        self.base = {}
+        self.OPERATIONS = {
+            'good bye': self.good_bye,
+            'exit': self.good_bye,
+            'close': self.good_bye,
+            'hello': self.hello,
+            'show all': self.show_all,
+            'phone ': self.get_number,
+            'add ': self.add,
+            'change ': self.change
+        }
+        
+    def inputString(self, input_string, contact):
+        try:
+            self.contact = contact
+            self.input_string = input_string.lower().strip()
+            for i in self.OPERATIONS.keys():
+                if i + self.input_string[len(i):] == self.input_string:
+                    my_return = self.get_handler(i)(input_string)
+                    break
+            else:
+                raise MyException('error1')
+        except MyException:
+            pass
+        
+    def good_bye(self, input_string):
+        if input_string in ['close', 'exit', 'good bye']:
+            raise MyException('close')
+        else:
+            raise MyException('error1')
+
+    def hello(self, input_string):
+        if input_string == 'hello':
+            raise MyException('hello')
+        else:
+            raise MyException('error1')        
+        
+    def show_all(self, input_string):
+        if input_string == 'show all':
+            return self.contact.show_all()
+        else:
+            raise MyException('error1')
+
+    def get_number(self, input_string):
+        if input_string[0:6] != 'phone ':
+            raise MyException('error1')
+        else:
+            return self.contact.get_number()
+
+    def add(self, input_string):
+        list_add = input_string.split()
+        if input_string[0:4] != 'add ' or len(list_add) != 3:
+            raise MyException('error1')
+        return self.contact.add_record_string(list_add[1], list_add[2])
+
+    def change(self, input_string):
+        list_add = input_string.split()
+        if input_string[0:7] != 'change ' or len(list_add) != 3:
+            raise MyException('error1')
+        if list_add[1] not in base:
+            raise MyException('change_error1')
+        elif list_add[2] in base.values():
+            raise MyException('add_error1')
+        return self.contact.change()
+
+    def get_handler(self, operator):
+        return self.OPERATIONS[operator]
+
+
+class AddressBook(UserDict):
+    data = {}
+    def __init__(self):
+        #self.data = {}
+        #record = Record()
+        pass
+    
+    def add_record_string(self, name_input, number_input):        
+        #result = record.new_record(Name(name_input), Phone(number_input))
+        result = record.new_record(name_input, number_input)
+        #self.data[result[0]] = [result[1]]
+        print(result)
+        print('OK')
+
+    def add_record(self, input_obj):    
+        self.data[input_obj.name.value] = input_obj
+        #print(input_obj.name.value)
+        #print('add_rec')
+        pass
+
+    def show_all(self):
+        if len(self.data):
+            print(self.data)
+        else:
+            raise MyException('show_error1')
+
+    def get_number(self):
+        pass
+
+    def change(self):
+        pass
+
+
+class Record():
+    name = ''
+    phones = []
+    def __init__(self, name, phone):   
+        Record.name =  name
+        Record.phones.append(phone)
+
+    
+    def new_record(self, name_input, number_input):
+        name = Name()
+        name_return = name.revision_name(name_input)
+        if name_return[1]:
+            name.value = name_return[0]
+        else:
+            raise MyException('error1')
+        
+        phone = Phone()
+        number_result = phone.revision_number(number_input)        
+        if number_result[1]:
+            phone.value = number_result[0]
+        else:
+            raise MyException('error1')        
+        rec = Record(name, phone)
+        
+        return rec
+
+    
+
+class Field():
+    pass
+
+
+class Name(Field):
+    value = ''
+    def __init__(self, value):
+        Name.value = value
+        
+    def revision_name(self, name_input):
+        print('name')
+        result = [name_input, True]
+        return result
+
+
+
+class Phone(Field):
+    #phones = []   
+    value = ''
+    def __init__(self, value):
+        Phone.value = value    
+
+    def revision_number(self, number_input):
+        print('number')
+        result = [number_input, True]
+        return result
+
+
+def main():
+    cont_parser = Parser()
+    contact = AddressBook()
+    while True:
+        input_string = input()
+        cont_parser.inputString(input_string, contact)
