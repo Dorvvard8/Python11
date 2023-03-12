@@ -1,0 +1,308 @@
+import sys
+import os
+import datetime
+from collections import UserDict
+from datetime import date
+from datetime import timedelta
+
+os.system('cls||clear')
+
+
+class MyException(Exception):
+    def __init__(self, error):
+        self.output = {'error1': 'Invalid input! Try again!',
+                       'phone_error': 'Must be entered in the format: phone[space]username',
+                       'phone_error1': 'The name is NOT already in the database',
+                       'phone_error2': 'Incorrect number phone!',
+                       'birthday_error': '--Birthday is empty!',
+                       'date_error': 'Incorrect date birthday!',
+                       'add_error1': 'The name is already in the database',
+                       'add_error2': 'The phone is already in the database',
+                       'change_error1': 'The name is NOT already in the database',
+                       'hello': '--How can I help you?',
+                       'show_error1': '--The base is empty!',
+                       'close': '--Good bye!'
+                       }
+        print(self.output[error])
+        if error == 'close':
+            sys.exit()
+
+
+class Parser():
+    def __init__(self):
+        self.base = {}
+        self.OPERATIONS = {
+            'good bye': self.good_bye,
+            'exit': self.good_bye,
+            'close': self.good_bye,
+            'hello': self.hello,
+            'show all': self.show_all,
+            'phone ': self.get_number,
+            'add ': self.add,
+            'change ': self.change,
+            'iterator': self.iterator
+        }
+
+    def inputString(self, input_string, contact):
+        try:
+            self.contact = contact
+            self.input_string = input_string.lower().strip()
+            for i in self.OPERATIONS.keys():
+                if i + self.input_string[len(i):] == self.input_string:
+                    my_return = self.get_handler(i)(input_string)
+                    break
+            else:
+                raise MyException('error1')
+        except MyException:
+            pass
+
+    def iterator(self, input_string):
+        if input_string == 'iterator':
+            return self.contact.iterator()
+        else:
+            raise MyException('error1')
+
+
+    def good_bye(self, input_string):
+        if input_string in ['close', 'exit', 'good bye']:
+            raise MyException('close')
+        else:
+            raise MyException('error1')
+
+    def hello(self, input_string):
+        if input_string == 'hello':
+            raise MyException('hello')
+        else:
+            raise MyException('error1')
+
+    def show_all(self, input_string):
+        if input_string == 'show all':
+            return self.contact.show_all()
+        else:
+            raise MyException('error1')
+
+    def get_number(self, input_string):
+        if input_string[0:6] != 'phone ':
+            raise MyException('error1')
+        else:
+            return self.contact.get_number()
+
+    def add(self, input_string):
+        list_add = input_string.split()
+        if input_string[0:4] == 'add ' and len(list_add) == 3:
+            return self.contact.add_record_string(list_add[1], list_add[2])
+        elif input_string[0:4] == 'add ' and len(list_add) == 4:
+            return self.contact.add_record_string(list_add[1], list_add[2], list_add[3])
+        else:
+            raise MyException('error1')
+
+    def change(self, input_string):
+        list_add = input_string.split()
+        if input_string[0:7] != 'change ' or len(list_add) != 3:
+            raise MyException('error1')
+        if list_add[1] not in base:
+            raise MyException('change_error1')
+        elif list_add[2] in base.values():
+            raise MyException('add_error1')
+        return self.contact.change()
+
+    def get_handler(self, operator):
+        return self.OPERATIONS[operator]
+
+
+class AddressBook(UserDict):
+    __n = 1
+    data = {}
+
+    def __init__(self):
+        pass
+
+    def add_record_string(self, name_input, number_input, birthday_input):
+        result = Record.new_record(self, name_input, number_input, birthday_input)
+        self.data[result.name.value] = result
+
+    def add_record(self, input_obj):
+        self.data[input_obj.name.value] = input_obj
+
+    def show_all(self):
+        if len(self.data):
+            for key, value in self.data.items():
+                print(
+                    f'{key}: phone: {value.phones[0].value} birthday: {value.birthday.value}')
+        else:
+            raise MyException('show_error1')
+
+    def get_number(self):
+        pass
+
+    def change(self):
+        pass
+
+    def iterator(self):
+        print('enter the number of output lines')
+        input_string = input()
+        if input_string.isdigit():
+            digit_input_string = int(input_string)
+            if int(input_string) >= len(self.data):
+                self.show_all()
+            else:
+                print('--START-----------------------------')
+                i = 0
+                for key, value in self.data.items():
+
+                    if i == digit_input_string:
+                        i = 0
+                        input_string2 = input()
+                    print(
+                        f'{key}: phone: {value.phones[0].value} birthday: {value.birthday.value}')
+                    i += 1
+                print('--END-------------------------------')
+        else:
+            raise MyException('error1')
+        
+    def __iter__(self):
+        self.__n = 1
+        return self
+
+    def __next__(self):
+        if self.__n < len(self.data):
+            x = self
+            self.__n += 1
+            return x
+        else:
+            raise StopIteration
+    def __next__(self):
+        if self.__n < len(self):
+            item = self.items()
+        
+    def __iter__(self):
+        pass
+
+
+class Record():
+    result1 = {}
+    name = ''
+    birthday = ''
+    phones = []
+
+    def __init__(self, name, phone, birthday):
+        Record.name = name
+        self.birthday = birthday
+        # add Dim1 +380637275820 23.03.1976
+        # add Dim2 +380600000000 01.01.2000
+        
+    def new_record(self, name_input, number_input, birthday_input):
+        self.result1 = {}
+        name = Name(name_input)
+        name_return = name.revision_name(name_input)
+        if name_return[1]:
+            name.value = name_return[0]
+        else:
+            raise MyException('error1')
+        phone = Phone(number_input)  
+        birthday = Birthday(birthday_input)
+        self.result1[name.value] = Record(name, phone, birthday)
+        self.result1[name.value].phones.clear()
+        self.result1[name.value].phones.append(phone)      
+        return self.result1[name.value]
+
+    def days_to_birthday(self):
+        if self.birthday.value:
+            current_date_time = date.today()
+            birthday_next = date(current_date_time.year, self.birthday.value.month,
+                                 self.birthday.value.day)
+            if current_date_time <= birthday_next:
+                result = birthday_next - current_date_time
+            else:
+                birthday_next = date(int(int(current_date_time.year) + 1), self.birthday.value.month,
+                                     self.birthday.value.day)
+                result = birthday_next - current_date_time
+        else:
+            raise MyException('birthday_error')
+        print(result)
+        return result
+
+
+class Field():
+    pass
+
+
+class Name(Field):
+    value = ''
+
+    def __init__(self, value):
+        self.value = value
+
+    def revision_name(self, name_input):
+        result = [name_input, True]
+        return result
+
+
+class Phone(Field):
+    __phone_list = []
+    def __init__(self, num):
+        self.__new_value = None
+        self.value = num
+
+    @property
+    def value(self):
+        return self.__new_value
+
+    @value.setter
+    def value(self, phone_value: str):
+        __new_value = str(phone_value).replace(
+            '(', '').replace(')', '').replace('-', '')
+        if __new_value[0] == '+':
+            __new_value = __new_value[1:len(__new_value)]
+        if __new_value.isdigit() and len(__new_value) == 12:
+            self.__new_value = __new_value
+            self.__phone_list.append(self)
+        else:
+            self.__new_value = None
+            print('Incorrect number phone!')
+        self.return_obj()
+
+    def return_obj(self):
+        return self.__phone_list[len(self.__phone_list)-1]
+
+
+class Birthday():
+    __birth = []
+    def __init__(self, date):
+        self.__new_value = None
+        self.value = date
+        
+        
+        
+    @property
+    def value(self):
+        return self.__new_value
+
+    @value.setter
+    def value(self, date_value: str):
+        # date
+        if len(date_value.split('.')) == 3:
+            try:
+                date = datetime.datetime.strptime(
+                    date_value, '%d.%m.%Y')
+                self.__new_value = date
+                self.__birth.append(self)
+            except:
+                print('Incorrect1 date birthday!')
+
+        else:
+            self.__value = None
+            print('Incorrect2 date birthday!')
+        self.return_obj()
+    
+    def return_obj(self):
+        return self.__birth[len(self.__birth)-1]
+
+def main():
+    cont_parser = Parser()
+    contact = AddressBook()      
+    while True:
+        input_string = input()    
+        cont_parser.inputString(input_string, contact)
+
+main()
